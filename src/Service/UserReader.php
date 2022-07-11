@@ -49,7 +49,7 @@ final class UserReader extends UserRepository {
     }
 
 
-    public function followersOfUser(UuidInterface $uuid): UsersCollection
+    public function followersOfUser(UuidInterface $uuid, int $pageNumber = 0): UsersCollection
     {
         $users = $this->createQueryBuilder('q')
             ->select('u')
@@ -57,6 +57,8 @@ final class UserReader extends UserRepository {
             ->where('f.userTo = :followedUser')
             ->andWhere('u.id != :followedUser')
             ->innerJoin(User::class, 'u')
+            ->setFirstResult((self::PAGE_SIZE * $pageNumber))
+            ->setMaxResults(self::PAGE_SIZE)
             ->setParameter(':followedUser', $uuid->toString())
             ->getQuery()
             ->getResult();

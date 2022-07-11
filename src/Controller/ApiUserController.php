@@ -51,8 +51,8 @@ class ApiUserController extends AbstractController
         return new JsonResponse($users->toArray());
     }
 
-    #[Route(path: '/followers', name: 'api_followers_user', methods: ['GET'])]
-    public function followers(): Response
+    #[Route(path: '/followers/{page}', name: 'api_followers_user', methods: ['GET'])]
+    public function followers(int $page): Response
     {
         try {
             $this->denyAccessUnlessGranted(UserType::ROLE_USER);
@@ -62,7 +62,7 @@ class ApiUserController extends AbstractController
             return new JsonResponse(['error' => 'You need to be logged first...']);
         }
 
-        $users = $this->userReader->followersOfUser($loggedUser->getId());
+        $users = $this->userReader->followersOfUser($loggedUser->getId(), $page);
 
         return new JsonResponse($users->toArray());
     }
