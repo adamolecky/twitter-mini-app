@@ -1,0 +1,44 @@
+---
+version: "3"
+
+services:
+
+  # --- MariaDB 10.5
+  db:
+    container_name: "btq-project-db"
+    image: bitnami/mariadb:10.5
+    environment:
+      - MARIADB_ROOT_PASSWORD=root
+      - MARIADB_USER=user
+      - MARIADB_PASSWORD=password
+      - MARIADB_DATABASE=database
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - project-db:/bitnami:delegated
+
+  # --- PHP 8.0
+  php:
+    container_name: "btq-project-php"
+    image: bitnami/php-fpm:8.0
+    depends_on:
+      - db
+    volumes:
+      - .:/app:delegated
+      - ./docker/php.ini:/opt/bitnami/php/etc/conf.d/php.ini:ro
+
+  # --- nginx 1.19
+  nginx:
+    container_name: "btq-project-nginx"
+    image: bitnami/nginx:1.19
+    ports:
+      - "80:8080"
+    depends_on:
+      - php
+    volumes:
+      - .:/app:delegated
+      - ./docker/nginx.conf:/opt/bitnami/nginx/conf/server_blocks/site.conf:ro
+
+volumes:
+  project-db:
+    driver: local
