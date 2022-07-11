@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Collection\UsersCollection;
+use App\Entity\Follow;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -47,5 +48,20 @@ final class UserReader extends UserRepository {
             ->getOneOrNullResult();
     }
 
+
+    public function followersOfUser(UuidInterface $uuid): UsersCollection
+    {
+        $users = $this->createQueryBuilder('q')
+            ->select('u')
+            ->from(Follow::class, 'f')
+            ->where('f.userTo = :followedUser')
+            ->andWhere('u.id != :followedUser')
+            ->innerJoin(User::class, 'u')
+            ->setParameter(':followedUser', $uuid->toString())
+            ->getQuery()
+            ->getResult();
+
+        return new UsersCollection(User::class, $users);
+    }
 
 }

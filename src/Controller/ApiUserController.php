@@ -43,16 +43,28 @@ class ApiUserController extends AbstractController
 
     }
 
-    #[Route(path: '/{id}', name: 'api_user_show', methods: ['GET'])]
-    public function show(string $id): Response
+    #[Route(path: '/list/{page}', name: 'api_user_index', methods: ['GET'])]
+    public function index(int $page): Response
     {
         $this->denyAccessUnlessGranted(UserType::ROLE_USER);
+        $users = $this->userReader->getPagedUsersAsCollection($page);
+        return new JsonResponse($users->toArray());
+    }
+
+    #[Route(path: '/followers', name: 'api_followers_user', methods: ['GET'])]
+    public function followers(): Response
+    {
         try {
-            $uuid = Uuid::fromString($id);
-            return new JsonResponse($this->userReader->getUser($uuid));
-        } catch (\Exception $e) {
-            return new JsonResponse(['error' => 'Not Valid uuid string']);
+            $this->denyAccessUnlessGranted(UserType::ROLE_USER);
+            /** @var User $loggedUser */
+            $loggedUser = $this->getUser();
+        } catch (\Exception $exception) {
+            return new JsonResponse(['error' => 'You need to be logged first...']);
         }
+
+        $users = $this->userReader->followersOfUser($loggedUser->getId());
+
+        return new JsonResponse($users->toArray());
     }
 
     #[Route(path: '/{id}', name: 'api_user_delete', methods: ['DELETE'])]
@@ -67,12 +79,16 @@ class ApiUserController extends AbstractController
         return new JsonResponse(['success' => true]);
     }
 
-    #[Route(path: '/list/{page}', name: 'api_user_index', methods: ['GET'])]
-    public function index(int $page): Response
+    #[Route(path: '/{id}', name: 'api_user_show', methods: ['GET'])]
+    public function show(string $id): Response
     {
         $this->denyAccessUnlessGranted(UserType::ROLE_USER);
-        $users = $this->userReader->getPagedUsersAsCollection($page);
-        return new JsonResponse($users->toArray());
+        try {
+            $uuid = Uuid::fromString($id);
+            return new JsonResponse($this->userReader->getUser($uuid));
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Not Valid uuid string']);
+        }
     }
 
 }

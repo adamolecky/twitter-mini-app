@@ -30,12 +30,13 @@ class ApiFollowController extends AbstractController
     )
     {
     }
+
     #[Route(path: '/{id}', name: 'api_follow_user', methods: ['GET'])]
     public function new(string $id): Response
     {
-
         try {
             $this->denyAccessUnlessGranted(UserType::ROLE_USER);
+            /** @var User $loggedUser */
             $loggedUser = $this->getUser();
         } catch (\Exception $exception) {
             return new JsonResponse(['error' => 'You need to be logged first...']);
