@@ -14,7 +14,6 @@ return [
         '/_profiler/search_bar' => [[['_route' => '_profiler_search_bar', '_controller' => 'web_profiler.controller.profiler::searchBarAction'], null, null, null, false, false, null]],
         '/_profiler/phpinfo' => [[['_route' => '_profiler_phpinfo', '_controller' => 'web_profiler.controller.profiler::phpinfoAction'], null, null, null, false, false, null]],
         '/_profiler/open' => [[['_route' => '_profiler_open_file', '_controller' => 'web_profiler.controller.profiler::openAction'], null, null, null, false, false, null]],
-        '/api/user/followers' => [[['_route' => 'api_followers_user', '_controller' => 'App\\Controller\\ApiUserController::followers'], null, ['GET' => 0], null, false, false, null]],
         '/api/login' => [[['_route' => 'api_user_login', '_controller' => 'App\\Controller\\SecurityController::loginAction'], null, null, null, false, false, null]],
     ],
     [ // $regexpList
@@ -37,9 +36,10 @@ return [
                 .'|/api/(?'
                     .'|follow/([^/]++)(*:192)'
                     .'|user/(?'
-                        .'|list/([^/]++)(*:221)'
+                        .'|list(?:/([^/]++)(?:/([^/]++))?)?(*:240)'
+                        .'|followers/([^/]++)(*:266)'
                         .'|([^/]++)(?'
-                            .'|(*:240)'
+                            .'|(*:285)'
                         .')'
                     .')'
                 .')'
@@ -54,8 +54,9 @@ return [
         149 => [[['_route' => '_profiler_exception_css', '_controller' => 'web_profiler.controller.exception_panel::stylesheet'], ['token'], null, null, false, false, null]],
         159 => [[['_route' => '_profiler', '_controller' => 'web_profiler.controller.profiler::panelAction'], ['token'], null, null, false, true, null]],
         192 => [[['_route' => 'api_follow_user', '_controller' => 'App\\Controller\\ApiFollowController::new'], ['id'], ['GET' => 0], null, false, true, null]],
-        221 => [[['_route' => 'api_user_index', '_controller' => 'App\\Controller\\ApiUserController::index'], ['page'], ['GET' => 0], null, false, true, null]],
-        240 => [
+        240 => [[['_route' => 'api_user_index', 'page' => 1, 'sort' => null, '_controller' => 'App\\Controller\\ApiUserController::index'], ['page', 'sort'], ['GET' => 0], null, false, true, null]],
+        266 => [[['_route' => 'api_followers_user', '_controller' => 'App\\Controller\\ApiUserController::followers'], ['page'], ['GET' => 0], null, false, true, null]],
+        285 => [
             [['_route' => 'api_user_delete', '_controller' => 'App\\Controller\\ApiUserController::delete'], ['id'], ['DELETE' => 0], null, false, true, null],
             [['_route' => 'api_user_show', '_controller' => 'App\\Controller\\ApiUserController::show'], ['id'], ['GET' => 0], null, false, true, null],
             [null, null, null, null, false, false, 0],

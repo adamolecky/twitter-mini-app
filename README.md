@@ -33,7 +33,7 @@ api/user/new
 api/user/{id}
 api/user/{id}
 api/user/followers
-api/user/list/{page}
+api/user/list/{page}/{sort}
 api/follow/{id}
 ```
 

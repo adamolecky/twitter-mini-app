@@ -43,11 +43,11 @@ class ApiUserController extends AbstractController
 
     }
 
-    #[Route(path: '/list/{page}', name: 'api_user_index', methods: ['GET'])]
-    public function index(int $page): Response
+    #[Route(path: '/list/{page}/{sort}', name: 'api_user_index', defaults: ['page' => 1, 'sort' => null], methods: ['GET'])]
+    public function index(Request $request, int $page, ?string $sort): Response
     {
         $this->denyAccessUnlessGranted(UserType::ROLE_USER);
-        $users = $this->userReader->getPagedUsersAsCollection($page);
+        $users = $this->userReader->getPagedUsersAsCollection($page, $sort);
         return new JsonResponse($users->toArray());
     }
 

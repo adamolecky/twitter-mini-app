@@ -358,6 +358,7 @@
       <argument type="service" id="security.user_password_encoder.generic"/>
     </service>
     <service id="App\DataFixtures\UserFixture" class="App\DataFixtures\UserFixture" autowire="true" autoconfigure="true"/>
+    <service id="App\Enum\SortOptionsUser" class="App\Enum\SortOptionsUser" autowire="true" autoconfigure="true"/>
     <service id="App\Enum\UserType" class="App\Enum\UserType" autowire="true" autoconfigure="true"/>
     <service id="App\EventListener\FollowUpdatedListener" class="App\EventListener\FollowUpdatedListener" autowire="true" autoconfigure="true">
       <tag name="doctrine.orm.entity_listener" event="postUpdate" entity="App\Entity\Follow"/>

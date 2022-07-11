@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Collection\UsersCollection;
 use App\Entity\Follow;
 use App\Entity\User;
+use App\Enum\SortOptionsUser;
 use App\Repository\UserRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,16 +24,20 @@ final class UserReader extends UserRepository {
 
     const PAGE_SIZE = 100;
 
-    public function getPagedUsersAsCollection(int $pageNumber = 0): UsersCollection
+    public function getPagedUsersAsCollection(int $pageNumber = 0, ?string $sortBy = null): UsersCollection
     {
-        $users = $this->createQueryBuilder('q')
+        $query = $this->createQueryBuilder('q')
                 ->select('u')
                 ->from(User::class, 'u')
-                ->orderBy('u.nick', 'ASC')
                 ->setFirstResult((self::PAGE_SIZE * $pageNumber))
-                ->setMaxResults(self::PAGE_SIZE)
-                ->getQuery()
-                ->getResult();
+                ->setMaxResults(self::PAGE_SIZE);
+
+        if (SortOptionsUser::isValid($sortBy)) {
+            $query->orderBy("u.{$sortBy}", 'ASC');
+        }
+
+        $users = $query->getQuery()
+            ->getResult();
 
         return new UsersCollection(User::class, $users);
     }
